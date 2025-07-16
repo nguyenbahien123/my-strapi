@@ -1,0 +1,48 @@
+{
+  "kind": "collectionType",
+  "collectionName": "apartment_units",
+  "info": {
+    "singularName": "apartment-unit",
+    "pluralName": "apartment-units",
+    "displayName": "ApartmentUnit"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "UnitCode": {
+      "type": "string",
+      "required": true,
+      "unique": false
+    },
+    "FloorNumber": {
+      "type": "integer"
+    },
+    "AreaSquareMeters": {
+      "type": "decimal"
+    },
+    "Value": {
+      "type": "decimal"
+    },
+    "NumberOfBedrooms": {
+      "type": "integer"
+    },
+    "NumberOfBathrooms": {
+      "type": "integer"
+    },
+    "Description": {
+      "type": "text"
+    },
+    "StatusCode": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::status.status"
+    },
+    "BuildingCode": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::building.building"
+    }
+  }
+}

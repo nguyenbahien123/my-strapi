@@ -1,0 +1,22 @@
+{
+  "collectionName": "invalid_tokens",
+  "info": {
+    "singularName": "invalid-token",
+    "pluralName": "invalid-tokens",
+    "displayName": "Invalid Token"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "token": {
+      "type": "text",
+      "required": true,
+      "unique": true
+    },
+    "expiredAt": {
+      "type": "datetime",
+      "required": true
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "kind": "collectionType",
+  "collectionName": "families",
+  "info": {
+    "singularName": "family",
+    "pluralName": "families",
+    "displayName": "Family"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "FamilyName": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

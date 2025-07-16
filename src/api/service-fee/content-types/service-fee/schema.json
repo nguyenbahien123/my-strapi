@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "service_fees",
+  "info": {
+    "singularName": "service-fee",
+    "pluralName": "service-fees",
+    "displayName": "ServiceFee"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "FeeName": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "Description": {
+      "type": "text"
+    },
+    "DefaultAmount": {
+      "type": "decimal",
+      "required": true
+    },
+    "FeeUnit": {
+      "type": "string"
+    },
+    "buildings": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::building.building",
+      "mappedBy": "service_fees"
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "kind": "collectionType",
+  "collectionName": "feedbacks",
+  "info": {
+    "singularName": "feedback",
+    "pluralName": "feedbacks",
+    "displayName": "Feedback"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Type": {
+      "type": "enumeration",
+      "enum": [
+        "Suggest",
+        "Issue",
+        "Question"
+      ]
+    },
+    "Title": {
+      "type": "text"
+    },
+    "Content": {
+      "type": "richtext"
+    },
+    "PhoneNumber": {
+      "type": "integer"
+    },
+    "Image": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "Resident": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::resident.resident"
+    }
+  }
+}

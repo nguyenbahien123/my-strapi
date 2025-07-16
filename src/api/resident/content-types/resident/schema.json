@@ -1,0 +1,58 @@
+{
+  "kind": "collectionType",
+  "collectionName": "residents",
+  "info": {
+    "singularName": "resident",
+    "pluralName": "residents",
+    "displayName": "Resident"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "phoneNumber": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "name": {
+      "type": "string"
+    },
+    "avatar": {
+      "type": "string"
+    },
+    "users_permissions_user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "statuscode": {
+      "type": "enumeration",
+      "default": "Active",
+      "enum": [
+        "Active",
+        "Pending_Accept"
+      ]
+    },
+    "gender": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::gender.gender"
+    },
+    "buildings": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::building.building"
+    },
+    "zaloId": {
+      "type": "text",
+      "unique": true
+    },
+    "email": {
+      "type": "email",
+      "required": true,
+      "unique": true
+    }
+  }
+}

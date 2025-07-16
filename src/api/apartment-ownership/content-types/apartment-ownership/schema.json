@@ -1,0 +1,32 @@
+{
+  "kind": "collectionType",
+  "collectionName": "apartment_ownerships",
+  "info": {
+    "singularName": "apartment-ownership",
+    "pluralName": "apartment-ownerships",
+    "displayName": "Contract"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "StartDate": {
+      "type": "date",
+      "required": true
+    },
+    "EndDate": {
+      "type": "date"
+    },
+    "resident": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::resident.resident"
+    },
+    "apartment_unit": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::apartment-unit.apartment-unit"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "kind": "collectionType",
+  "collectionName": "family_members",
+  "info": {
+    "singularName": "family-member",
+    "pluralName": "family-members",
+    "displayName": "FamilyMember"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "RelationshipToHead": {
+      "type": "string"
+    },
+    "FamilyCode": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::family.family"
+    },
+    "ResidentCode": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::resident.resident"
+    }
+  }
+}
