@@ -529,14 +529,10 @@ export interface ApiBlogBlog extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    Image: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios',
-      true
-    >;
+    Image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::blog.blog'> &
       Schema.Attribute.Private;
-    PhoneNumber: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     Title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
@@ -709,9 +705,16 @@ export interface ApiFeedbackFeedback extends Struct.CollectionTypeSchema {
       'api::feedback.feedback'
     > &
       Schema.Attribute.Private;
-    PhoneNumber: Schema.Attribute.Integer;
     publishedAt: Schema.Attribute.DateTime;
     Resident: Schema.Attribute.Relation<'oneToOne', 'api::resident.resident'>;
+    StatusFeedback: Schema.Attribute.Enumeration<
+      [
+        'Ch\u01B0a x\u1EED l\u00FD',
+        '\u0110ang x\u1EED l\u00FD',
+        '\u0110\u00E3 x\u1EED l\u00FD',
+      ]
+    > &
+      Schema.Attribute.DefaultTo<'Ch\u01B0a x\u1EED l\u00FD'>;
     Title: Schema.Attribute.Text;
     Type: Schema.Attribute.Enumeration<['Suggest', 'Issue', 'Question']>;
     updatedAt: Schema.Attribute.DateTime;

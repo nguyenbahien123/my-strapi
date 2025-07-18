@@ -25,9 +25,6 @@
     "Content": {
       "type": "richtext"
     },
-    "PhoneNumber": {
-      "type": "integer"
-    },
     "Image": {
       "type": "media",
       "multiple": true,
@@ -42,6 +39,15 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::resident.resident"
+    },
+    "StatusFeedback": {
+      "type": "enumeration",
+      "default": "Chưa xử lý",
+      "enum": [
+        "Chưa xử lý",
+        "Đang xử lý",
+        "Đã xử lý"
+      ]
     }
   }
 }

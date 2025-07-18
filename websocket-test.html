@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>WebSocket Feedback Test</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2em; }
+    #log { border: 1px solid #ccc; padding: 1em; height: 300px; overflow-y: auto; background: #f9f9f9; }
+    #status { margin-bottom: 1em; }
+    #connectBtn { margin-left: 1em; }
+  </style>
+</head>
+<body>
+  <h2>WebSocket Feedback Test</h2>
+  <div>
+    <label for="zaloId">ZaloId:</label>
+    <input type="text" id="zaloId" value="testuser" />
+    <button id="connectBtn">Kết nối WebSocket</button>
+    <span id="status"></span>
+  </div>
+  <div id="log"></div>
+  <script>
+    let ws;
+    const logDiv = document.getElementById('log');
+    const statusSpan = document.getElementById('status');
+    const connectBtn = document.getElementById('connectBtn');
+    const zaloIdInput = document.getElementById('zaloId');
+
+    function log(msg) {
+      const p = document.createElement('div');
+      p.textContent = msg;
+      logDiv.appendChild(p);
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
+    connectBtn.onclick = function() {
+      const zaloId = zaloIdInput.value.trim();
+      if (!zaloId) {
+        alert('Vui lòng nhập zaloId!');
+        return;
+      }
+      if (ws) ws.close();
+      logDiv.innerHTML = '';
+      statusSpan.textContent = 'Đang kết nối...';
+      ws = new WebSocket('ws://localhost:1337/ws?zaloId=' + encodeURIComponent(zaloId));
+      ws.onopen = () => {
+        statusSpan.textContent = 'Đã kết nối!';
+        log('WebSocket connected as zaloId: ' + zaloId);
+      };
+      ws.onclose = () => {
+        statusSpan.textContent = 'Đã ngắt kết nối!';
+        log('WebSocket disconnected');
+      };
+      ws.onerror = (e) => {
+        statusSpan.textContent = 'Lỗi kết nối!';
+        log('WebSocket error: ' + e.message);
+      };
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          log('Nhận: ' + JSON.stringify(data));
+          if (data.type === 'feedback_new') {
+            alert('Có feedback mới: ' + (data.feedback?.Title || '')); 
+          }
+          if (data.type === 'feedback_status') {
+            alert('Feedback của bạn đã chuyển sang trạng thái: ' + data.status);
+          }
+        } catch (err) {
+          log('Lỗi parse message: ' + event.data);
+        }
+      };
+    };
+  </script>
+</body>
+</html> 
