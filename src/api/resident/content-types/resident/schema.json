@@ -11,13 +11,15 @@
   },
   "pluginOptions": {},
   "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "unique": false
+    },
     "phoneNumber": {
       "type": "string",
       "required": true,
       "unique": true
-    },
-    "name": {
-      "type": "string"
     },
     "avatar": {
       "type": "string"
@@ -53,6 +55,29 @@
       "type": "email",
       "required": true,
       "unique": true
+    },
+    "payments": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::payment.payment",
+      "mappedBy": "payer"
+    },
+    "family": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::family.family"
+    },
+    "survey_responses": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::survey-response.survey-response",
+      "mappedBy": "resident"
+    },
+    "service_registrations": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::service-registration.service-registration",
+      "mappedBy": "resident"
     }
   }
 }

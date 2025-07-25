@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "survey_answers",
+  "info": {
+    "singularName": "survey-answer",
+    "pluralName": "survey-answers",
+    "displayName": "Survey-answer"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "textAnswer": {
+      "type": "text",
+      "required": false
+    },
+    "survey_response": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::survey-response.survey-response",
+      "inversedBy": "survey_answers"
+    },
+    "option": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::option.option",
+      "inversedBy": "survey_answers"
+    },
+    "question": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::question.question",
+      "inversedBy": "survey_answers"
+    }
+  }
+}

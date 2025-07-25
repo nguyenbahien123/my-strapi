@@ -1,0 +1,51 @@
+{
+  "kind": "collectionType",
+  "collectionName": "service_registrations",
+  "info": {
+    "singularName": "service-registration",
+    "pluralName": "service-registrations",
+    "displayName": "ServiceRegistration"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "statusRegister": {
+      "type": "enumeration",
+      "enum": [
+        "Đã đăng kí",
+        "Hết hạn",
+        "Đã hủy",
+        "Chờ thanh toán"
+      ]
+    },
+    "start_date": {
+      "type": "date"
+    },
+    "end_date": {
+      "type": "date"
+    },
+    "building_service": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::building-service.building-service",
+      "inversedBy": "service_registrations"
+    },
+    "resident": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::resident.resident",
+      "inversedBy": "service_registrations"
+    },
+    "payment": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::payment.payment",
+      "inversedBy": "service_registrations"
+    },
+    "app_trans_id": {
+      "type": "text"
+    }
+  }
+}

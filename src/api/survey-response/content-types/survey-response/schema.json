@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "collectionName": "survey_responses",
+  "info": {
+    "singularName": "survey-response",
+    "pluralName": "survey-responses",
+    "displayName": "Survey-response"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "vote_survey": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::vote-survey.vote-survey",
+      "inversedBy": "survey_responses"
+    },
+    "resident": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::resident.resident",
+      "inversedBy": "survey_responses"
+    },
+    "survey_answers": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::survey-answer.survey-answer",
+      "mappedBy": "survey_response"
+    }
+  }
+}

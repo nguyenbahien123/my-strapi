@@ -74,6 +74,76 @@ export default factories.createCoreController('api::resident.resident', ({ strap
             resident,
         });
     },
+    async residentFeeItems(ctx) {
+        // Lấy user từ JWT đã xác thực
+        const user = ctx.state.user;
+        if (!user) {
+            return ctx.unauthorized("Missing or invalid token");
+        }
+        // Tìm resident liên kết với user này
+        const resident = await strapi.db.query('api::resident.resident').findOne({
+            where: { users_permissions_user: user.id },
+            populate: ['family'],
+        });
+        if (!resident || !resident.family || !resident.family.id) {
+            return ctx.notFound("Resident or family not found");
+        }
+        // Truy vấn các khoản phí của family này
+        const feeItems = await strapi.db.query('api::fee-item.fee-item').findMany({
+            where: { family: resident.family.id },
+            populate: ['utility_fee', 'fee_period', 'payment'],
+        });
+        // Phân loại đã thanh toán/chưa thanh toán
+        function mapFeeItem(item) {
+            return {
+                id: item.id,
+                amount: item.amount,
+                status: item.statusFeeItem,
+                invoice_date: item.invoice_date,
+                due_date: item.due_date,
+                usage: item.usage,
+                utility_fee: item.utility_fee
+                    ? {
+                        id: item.utility_fee.id,
+                        name: item.utility_fee.name,
+                        unit_price: item.utility_fee.unit_price,
+                        unit: item.utility_fee.unit,
+                        fee_type: item.utility_fee.fee_type,
+                    }
+                    : null,
+                fee_period: item.fee_period
+                    ? {
+                        id: item.fee_period.id,
+                        name: item.fee_period.name,
+                        start_date: item.fee_period.start_date,
+                        end_date: item.fee_period.end_date,
+                    }
+                    : null,
+                payment: item.payment
+                    ? {
+                        id: item.payment.id,
+                        total_amount: item.payment.total_amount,
+                        payment_method: item.payment.payment_method,
+                        paid_at: item.payment.paid_at,
+                        status: item.payment.statusPayment,
+                    }
+                    : null,
+            };
+        }
+
+        const unpaid = feeItems
+            .filter(item => item.statusFeeItem === 'Chưa thanh toán' || item.statusFeeItem === 'Quá hạn')
+            .map(mapFeeItem);
+        const paid = feeItems
+            .filter(item => item.statusFeeItem === 'Đã thanh toán')
+            .map(mapFeeItem);
+
+        ctx.send({
+            success: true,
+            unpaid,
+            paid,
+        });
+    },
     async logout(ctx) {
         const authHeader = ctx.request.header.authorization;
         if (!authHeader) {

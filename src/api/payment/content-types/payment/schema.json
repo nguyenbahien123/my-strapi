@@ -1,0 +1,64 @@
+{
+  "kind": "collectionType",
+  "collectionName": "payments",
+  "info": {
+    "singularName": "payment",
+    "pluralName": "payments",
+    "displayName": "Payment"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "total_amount": {
+      "type": "biginteger"
+    },
+    "payment_method": {
+      "type": "enumeration",
+      "enum": [
+        "ZaloPay",
+        "Chuyển khoản",
+        "Tiền mặt"
+      ]
+    },
+    "gateway_transaction_id": {
+      "type": "text"
+    },
+    "paid_at": {
+      "type": "date"
+    },
+    "statusPayment": {
+      "type": "enumeration",
+      "enum": [
+        "Thành công",
+        "Thất bại",
+        "Đang chờ"
+      ]
+    },
+    "note": {
+      "type": "richtext"
+    },
+    "app_trans_id": {
+      "type": "string"
+    },
+    "fee_items": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::fee-item.fee-item",
+      "mappedBy": "payment"
+    },
+    "payer": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::resident.resident",
+      "inversedBy": "payments"
+    },
+    "service_registrations": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::service-registration.service-registration",
+      "mappedBy": "payment"
+    }
+  }
+}

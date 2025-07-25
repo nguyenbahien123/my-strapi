@@ -1,0 +1,59 @@
+{
+  "kind": "collectionType",
+  "collectionName": "fee_items",
+  "info": {
+    "singularName": "fee-item",
+    "pluralName": "fee-items",
+    "displayName": "FeeItem"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "amount": {
+      "type": "biginteger"
+    },
+    "statusFeeItem": {
+      "type": "enumeration",
+      "enum": [
+        "Chưa thanh toán",
+        "Đã thanh toán",
+        "Quá hạn"
+      ]
+    },
+    "usage": {
+      "type": "integer"
+    },
+    "invoice_date": {
+      "type": "date"
+    },
+    "due_date": {
+      "type": "date"
+    },
+    "utility_fee": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::utility-fee.utility-fee",
+      "inversedBy": "fee_items"
+    },
+    "fee_period": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::fee-period.fee-period",
+      "inversedBy": "fee_items"
+    },
+    "family": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::family.family",
+      "inversedBy": "fee_items"
+    },
+    "payment": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::payment.payment",
+      "inversedBy": "fee_items"
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "utility_fees",
+  "info": {
+    "singularName": "utility-fee",
+    "pluralName": "utility-fees",
+    "displayName": "UtilityFee "
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "unit_price": {
+      "type": "integer"
+    },
+    "unit": {
+      "type": "string"
+    },
+    "fee_type": {
+      "type": "enumeration",
+      "enum": [
+        "Cố định",
+        "Theo tháng",
+        "Theo số lượng sử dụng"
+      ]
+    },
+    "is_active": {
+      "type": "boolean"
+    },
+    "fee_items": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::fee-item.fee-item",
+      "mappedBy": "utility_fee"
+    }
+  }
+}

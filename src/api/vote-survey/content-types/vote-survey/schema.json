@@ -1,0 +1,64 @@
+{
+  "kind": "collectionType",
+  "collectionName": "vote_surveys",
+  "info": {
+    "singularName": "vote-survey",
+    "pluralName": "vote-surveys",
+    "displayName": "Vote-survey"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "vote",
+        "survey"
+      ]
+    },
+    "isAnonymous": {
+      "type": "boolean"
+    },
+    "startDate": {
+      "type": "date"
+    },
+    "endDate": {
+      "type": "date"
+    },
+    "statusVote_survey": {
+      "type": "enumeration",
+      "enum": [
+        "draft",
+        "active",
+        "closed"
+      ]
+    },
+    "buildings": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::building.building",
+      "inversedBy": "vote_surveys"
+    },
+    "questions": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::question.question",
+      "mappedBy": "vote_survey"
+    },
+    "survey_responses": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::survey-response.survey-response",
+      "mappedBy": "vote_survey"
+    }
+  }
+}

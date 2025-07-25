@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "fee_periods",
+  "info": {
+    "singularName": "fee-period",
+    "pluralName": "fee-periods",
+    "displayName": "FeePeriod "
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "start_date": {
+      "type": "date"
+    },
+    "end_date": {
+      "type": "date"
+    },
+    "statusFeePeriod": {
+      "type": "enumeration",
+      "enum": [
+        "Mở",
+        "Đóng"
+      ]
+    },
+    "fee_items": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::fee-item.fee-item",
+      "mappedBy": "fee_period"
+    }
+  }
+}

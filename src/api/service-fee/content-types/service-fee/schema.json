@@ -12,16 +12,13 @@
   "pluginOptions": {},
   "attributes": {
     "FeeName": {
-      "type": "string",
-      "required": true,
-      "unique": true
+      "type": "string"
     },
     "Description": {
       "type": "text"
     },
     "DefaultAmount": {
-      "type": "decimal",
-      "required": true
+      "type": "biginteger"
     },
     "FeeUnit": {
       "type": "string"
@@ -30,7 +27,7 @@
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::building.building",
-      "mappedBy": "service_fees"
+      "inversedBy": "service_fees"
     }
   }
 }

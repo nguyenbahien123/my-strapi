@@ -525,16 +525,16 @@ export interface ApiBlogBlog extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    Content: Schema.Attribute.RichText;
+    content: Schema.Attribute.RichText;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    Image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    imageUrl: Schema.Attribute.Text;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::blog.blog'> &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    Title: Schema.Attribute.String;
+    title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -571,12 +571,17 @@ export interface ApiBuildingServiceBuildingService
     location: Schema.Attribute.String;
     name: Schema.Attribute.String;
     operatingHours: Schema.Attribute.String;
-    price: Schema.Attribute.String;
+    price: Schema.Attribute.Integer;
     publishedAt: Schema.Attribute.DateTime;
+    service_registrations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::service-registration.service-registration'
+    >;
+    unit: Schema.Attribute.String & Schema.Attribute.DefaultTo<'th\u00E1ng'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    userCount: Schema.Attribute.String;
+    userCount: Schema.Attribute.Integer;
   };
 }
 
@@ -614,6 +619,10 @@ export interface ApiBuildingBuilding extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    vote_surveys: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::vote-survey.vote-survey'
+    >;
     YearBuilt: Schema.Attribute.Integer;
   };
 }
@@ -667,6 +676,7 @@ export interface ApiFamilyFamily extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     FamilyName: Schema.Attribute.String & Schema.Attribute.Required;
+    fee_items: Schema.Attribute.Relation<'oneToMany', 'api::fee-item.fee-item'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -674,6 +684,88 @@ export interface ApiFamilyFamily extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiFeeItemFeeItem extends Struct.CollectionTypeSchema {
+  collectionName: 'fee_items';
+  info: {
+    displayName: 'FeeItem';
+    pluralName: 'fee-items';
+    singularName: 'fee-item';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    amount: Schema.Attribute.BigInteger;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    due_date: Schema.Attribute.Date;
+    family: Schema.Attribute.Relation<'manyToOne', 'api::family.family'>;
+    fee_period: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::fee-period.fee-period'
+    >;
+    invoice_date: Schema.Attribute.Date;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::fee-item.fee-item'
+    > &
+      Schema.Attribute.Private;
+    payment: Schema.Attribute.Relation<'manyToOne', 'api::payment.payment'>;
+    publishedAt: Schema.Attribute.DateTime;
+    statusFeeItem: Schema.Attribute.Enumeration<
+      [
+        'Ch\u01B0a thanh to\u00E1n',
+        '\u0110\u00E3 thanh to\u00E1n',
+        'Qu\u00E1 h\u1EA1n',
+      ]
+    >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    usage: Schema.Attribute.Integer;
+    utility_fee: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::utility-fee.utility-fee'
+    >;
+  };
+}
+
+export interface ApiFeePeriodFeePeriod extends Struct.CollectionTypeSchema {
+  collectionName: 'fee_periods';
+  info: {
+    displayName: 'FeePeriod ';
+    pluralName: 'fee-periods';
+    singularName: 'fee-period';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    end_date: Schema.Attribute.Date;
+    fee_items: Schema.Attribute.Relation<'oneToMany', 'api::fee-item.fee-item'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::fee-period.fee-period'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    start_date: Schema.Attribute.Date;
+    statusFeePeriod: Schema.Attribute.Enumeration<
+      ['M\u1EDF', '\u0110\u00F3ng']
+    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -818,6 +910,123 @@ export interface ApiInvalidTokenInvalidToken
   };
 }
 
+export interface ApiOptionOption extends Struct.CollectionTypeSchema {
+  collectionName: 'options';
+  info: {
+    displayName: 'Option';
+    pluralName: 'options';
+    singularName: 'option';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    content: Schema.Attribute.Text & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::option.option'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    question: Schema.Attribute.Relation<'manyToOne', 'api::question.question'>;
+    survey_answers: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::survey-answer.survey-answer'
+    >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiPaymentPayment extends Struct.CollectionTypeSchema {
+  collectionName: 'payments';
+  info: {
+    displayName: 'Payment';
+    pluralName: 'payments';
+    singularName: 'payment';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    app_trans_id: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    fee_items: Schema.Attribute.Relation<'oneToMany', 'api::fee-item.fee-item'>;
+    gateway_transaction_id: Schema.Attribute.Text;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::payment.payment'
+    > &
+      Schema.Attribute.Private;
+    note: Schema.Attribute.RichText;
+    paid_at: Schema.Attribute.Date;
+    payer: Schema.Attribute.Relation<'manyToOne', 'api::resident.resident'>;
+    payment_method: Schema.Attribute.Enumeration<
+      ['ZaloPay', 'Chuy\u1EC3n kho\u1EA3n', 'Ti\u1EC1n m\u1EB7t']
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    service_registrations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::service-registration.service-registration'
+    >;
+    statusPayment: Schema.Attribute.Enumeration<
+      ['Th\u00E0nh c\u00F4ng', 'Th\u1EA5t b\u1EA1i', '\u0110ang ch\u1EDD']
+    >;
+    total_amount: Schema.Attribute.BigInteger;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiQuestionQuestion extends Struct.CollectionTypeSchema {
+  collectionName: 'questions';
+  info: {
+    displayName: 'Question';
+    pluralName: 'questions';
+    singularName: 'question';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    content: Schema.Attribute.Text & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::question.question'
+    > &
+      Schema.Attribute.Private;
+    options: Schema.Attribute.Relation<'oneToMany', 'api::option.option'>;
+    publishedAt: Schema.Attribute.DateTime;
+    survey_answers: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::survey-answer.survey-answer'
+    >;
+    type: Schema.Attribute.Enumeration<
+      ['single_choice', 'multiple_choice', 'text']
+    >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    vote_survey: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::vote-survey.vote-survey'
+    >;
+  };
+}
+
 export interface ApiResidentResident extends Struct.CollectionTypeSchema {
   collectionName: 'residents';
   info: {
@@ -837,6 +1046,7 @@ export interface ApiResidentResident extends Struct.CollectionTypeSchema {
     email: Schema.Attribute.Email &
       Schema.Attribute.Required &
       Schema.Attribute.Unique;
+    family: Schema.Attribute.Relation<'oneToOne', 'api::family.family'>;
     gender: Schema.Attribute.Relation<'oneToOne', 'api::gender.gender'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -844,13 +1054,22 @@ export interface ApiResidentResident extends Struct.CollectionTypeSchema {
       'api::resident.resident'
     > &
       Schema.Attribute.Private;
-    name: Schema.Attribute.String;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    payments: Schema.Attribute.Relation<'oneToMany', 'api::payment.payment'>;
     phoneNumber: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.Unique;
     publishedAt: Schema.Attribute.DateTime;
+    service_registrations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::service-registration.service-registration'
+    >;
     statuscode: Schema.Attribute.Enumeration<['Active', 'Pending_Accept']> &
       Schema.Attribute.DefaultTo<'Active'>;
+    survey_responses: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::survey-response.survey-response'
+    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -880,11 +1099,9 @@ export interface ApiServiceFeeServiceFee extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    DefaultAmount: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    DefaultAmount: Schema.Attribute.BigInteger;
     Description: Schema.Attribute.Text;
-    FeeName: Schema.Attribute.String &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique;
+    FeeName: Schema.Attribute.String;
     FeeUnit: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -893,6 +1110,51 @@ export interface ApiServiceFeeServiceFee extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiServiceRegistrationServiceRegistration
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'service_registrations';
+  info: {
+    displayName: 'ServiceRegistration';
+    pluralName: 'service-registrations';
+    singularName: 'service-registration';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    app_trans_id: Schema.Attribute.Text;
+    building_service: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::building-service.building-service'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    end_date: Schema.Attribute.Date;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::service-registration.service-registration'
+    > &
+      Schema.Attribute.Private;
+    payment: Schema.Attribute.Relation<'manyToOne', 'api::payment.payment'>;
+    publishedAt: Schema.Attribute.DateTime;
+    resident: Schema.Attribute.Relation<'manyToOne', 'api::resident.resident'>;
+    start_date: Schema.Attribute.Date;
+    statusRegister: Schema.Attribute.Enumeration<
+      [
+        '\u0110\u00E3 \u0111\u0103ng k\u00ED',
+        'H\u1EBFt h\u1EA1n',
+        '\u0110\u00E3 h\u1EE7y',
+        'Ch\u1EDD thanh to\u00E1n',
+      ]
+    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -924,6 +1186,163 @@ export interface ApiStatusStatus extends Struct.CollectionTypeSchema {
     StatusCode: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.Unique;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiSurveyAnswerSurveyAnswer
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'survey_answers';
+  info: {
+    displayName: 'Survey-answer';
+    pluralName: 'survey-answers';
+    singularName: 'survey-answer';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::survey-answer.survey-answer'
+    > &
+      Schema.Attribute.Private;
+    option: Schema.Attribute.Relation<'manyToOne', 'api::option.option'>;
+    publishedAt: Schema.Attribute.DateTime;
+    question: Schema.Attribute.Relation<'manyToOne', 'api::question.question'>;
+    survey_response: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::survey-response.survey-response'
+    >;
+    textAnswer: Schema.Attribute.Text;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiSurveyResponseSurveyResponse
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'survey_responses';
+  info: {
+    displayName: 'Survey-response';
+    pluralName: 'survey-responses';
+    singularName: 'survey-response';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::survey-response.survey-response'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    resident: Schema.Attribute.Relation<'manyToOne', 'api::resident.resident'>;
+    survey_answers: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::survey-answer.survey-answer'
+    >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    vote_survey: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::vote-survey.vote-survey'
+    >;
+  };
+}
+
+export interface ApiUtilityFeeUtilityFee extends Struct.CollectionTypeSchema {
+  collectionName: 'utility_fees';
+  info: {
+    displayName: 'UtilityFee ';
+    pluralName: 'utility-fees';
+    singularName: 'utility-fee';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
+    fee_items: Schema.Attribute.Relation<'oneToMany', 'api::fee-item.fee-item'>;
+    fee_type: Schema.Attribute.Enumeration<
+      [
+        'C\u1ED1 \u0111\u1ECBnh',
+        'Theo th\u00E1ng',
+        'Theo s\u1ED1 l\u01B0\u1EE3ng s\u1EED d\u1EE5ng',
+      ]
+    >;
+    is_active: Schema.Attribute.Boolean;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::utility-fee.utility-fee'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    unit: Schema.Attribute.String;
+    unit_price: Schema.Attribute.Integer;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiVoteSurveyVoteSurvey extends Struct.CollectionTypeSchema {
+  collectionName: 'vote_surveys';
+  info: {
+    displayName: 'Vote-survey';
+    pluralName: 'vote-surveys';
+    singularName: 'vote-survey';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    buildings: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::building.building'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
+    endDate: Schema.Attribute.Date;
+    isAnonymous: Schema.Attribute.Boolean;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::vote-survey.vote-survey'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    questions: Schema.Attribute.Relation<'oneToMany', 'api::question.question'>;
+    startDate: Schema.Attribute.Date;
+    statusVote_survey: Schema.Attribute.Enumeration<
+      ['draft', 'active', 'closed']
+    >;
+    survey_responses: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::survey-response.survey-response'
+    >;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    type: Schema.Attribute.Enumeration<['vote', 'survey']>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1448,13 +1867,23 @@ declare module '@strapi/strapi' {
       'api::building.building': ApiBuildingBuilding;
       'api::family-member.family-member': ApiFamilyMemberFamilyMember;
       'api::family.family': ApiFamilyFamily;
+      'api::fee-item.fee-item': ApiFeeItemFeeItem;
+      'api::fee-period.fee-period': ApiFeePeriodFeePeriod;
       'api::feedback.feedback': ApiFeedbackFeedback;
       'api::gender.gender': ApiGenderGender;
       'api::global.global': ApiGlobalGlobal;
       'api::invalid-token.invalid-token': ApiInvalidTokenInvalidToken;
+      'api::option.option': ApiOptionOption;
+      'api::payment.payment': ApiPaymentPayment;
+      'api::question.question': ApiQuestionQuestion;
       'api::resident.resident': ApiResidentResident;
       'api::service-fee.service-fee': ApiServiceFeeServiceFee;
+      'api::service-registration.service-registration': ApiServiceRegistrationServiceRegistration;
       'api::status.status': ApiStatusStatus;
+      'api::survey-answer.survey-answer': ApiSurveyAnswerSurveyAnswer;
+      'api::survey-response.survey-response': ApiSurveyResponseSurveyResponse;
+      'api::utility-fee.utility-fee': ApiUtilityFeeUtilityFee;
+      'api::vote-survey.vote-survey': ApiVoteSurveyVoteSurvey;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;
