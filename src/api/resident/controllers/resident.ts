@@ -61,9 +61,12 @@ export default factories.createCoreController('api::resident.resident', ({ strap
         if (!user) {
             return ctx.unauthorized("Missing or invalid token");
         }
-        // Tìm resident liên kết với user này
+        // Tìm resident liên kết với user này (chỉ lấy published record)
         const resident = await strapi.db.query('api::resident.resident').findOne({
-            where: { users_permissions_user: user.id },
+            where: { 
+                users_permissions_user: user.id,
+                publishedAt: { $notNull: true }, // Chỉ lấy published record
+            },
             populate: ['gender', 'buildings'],
         });
         if (!resident) {

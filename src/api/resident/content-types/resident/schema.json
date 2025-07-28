@@ -78,6 +78,12 @@
       "relation": "oneToMany",
       "target": "api::service-registration.service-registration",
       "mappedBy": "resident"
+    },
+    "payment_histories": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::payment-history.payment-history",
+      "mappedBy": "resident"
     }
   }
 }

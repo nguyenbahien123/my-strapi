@@ -1,0 +1,68 @@
+{
+  "kind": "collectionType",
+  "collectionName": "payment_histories",
+  "info": {
+    "singularName": "payment-history",
+    "pluralName": "payment-histories",
+    "displayName": "Payment History"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "amount": {
+      "type": "integer",
+      "required": true
+    },
+    "payment_date": {
+      "type": "datetime",
+      "required": true
+    },
+    "payment_type": {
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "service",
+        "utility",
+        "maintenance",
+        "parking",
+        "other"
+      ]
+    },
+    "status": {
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "success",
+        "pending",
+        "failed",
+        "cancelled"
+      ]
+    },
+    "reference_id": {
+      "type": "string",
+      "required": true
+    },
+    "reference_type": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "payment_method": {
+      "type": "string",
+      "default": "zalopay"
+    },
+    "transaction_id": {
+      "type": "string"
+    },
+    "resident": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::resident.resident",
+      "inversedBy": "payment_histories"
+    }
+  }
+}

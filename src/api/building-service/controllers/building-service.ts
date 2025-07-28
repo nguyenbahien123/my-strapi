@@ -20,9 +20,21 @@ export default factories.createCoreController('api::building-service.building-se
 
       // Lấy tất cả dịch vụ và populate các đăng ký kèm resident
       const services = await strapi.entityService.findMany('api::building-service.building-service', {
+        filters: {
+          publishedAt: { $notNull: true }, // Chỉ lấy published records
+        },
         populate: {
           service_registrations: {
-            populate: ['resident'],
+            filters: {
+              publishedAt: { $notNull: true }, // Chỉ lấy published service_registrations
+            },
+            populate: {
+              resident: {
+                filters: {
+                  publishedAt: { $notNull: true }, // Chỉ lấy published residents
+                },
+              },
+            },
           },
         },
       });

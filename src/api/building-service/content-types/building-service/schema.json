@@ -45,9 +45,6 @@
     "userCount": {
       "type": "integer"
     },
-    "isRegistered": {
-      "type": "boolean"
-    },
     "service_registrations": {
       "type": "relation",
       "relation": "oneToMany",

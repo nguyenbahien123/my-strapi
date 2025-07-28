@@ -561,7 +561,6 @@ export interface ApiBuildingServiceBuildingService
     description: Schema.Attribute.Text;
     features: Schema.Attribute.JSON;
     icon: Schema.Attribute.String;
-    isRegistered: Schema.Attribute.Boolean;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -943,6 +942,51 @@ export interface ApiOptionOption extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiPaymentHistoryPaymentHistory
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'payment_histories';
+  info: {
+    displayName: 'Payment History';
+    pluralName: 'payment-histories';
+    singularName: 'payment-history';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    amount: Schema.Attribute.Integer & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::payment-history.payment-history'
+    > &
+      Schema.Attribute.Private;
+    payment_date: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    payment_method: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'zalopay'>;
+    payment_type: Schema.Attribute.Enumeration<
+      ['service', 'utility', 'maintenance', 'parking', 'other']
+    > &
+      Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    reference_id: Schema.Attribute.String & Schema.Attribute.Required;
+    reference_type: Schema.Attribute.String & Schema.Attribute.Required;
+    resident: Schema.Attribute.Relation<'manyToOne', 'api::resident.resident'>;
+    status: Schema.Attribute.Enumeration<
+      ['success', 'pending', 'failed', 'cancelled']
+    > &
+      Schema.Attribute.Required;
+    transaction_id: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiPaymentPayment extends Struct.CollectionTypeSchema {
   collectionName: 'payments';
   info: {
@@ -1055,6 +1099,10 @@ export interface ApiResidentResident extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     name: Schema.Attribute.String & Schema.Attribute.Required;
+    payment_histories: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::payment-history.payment-history'
+    >;
     payments: Schema.Attribute.Relation<'oneToMany', 'api::payment.payment'>;
     phoneNumber: Schema.Attribute.String &
       Schema.Attribute.Required &
@@ -1874,6 +1922,7 @@ declare module '@strapi/strapi' {
       'api::global.global': ApiGlobalGlobal;
       'api::invalid-token.invalid-token': ApiInvalidTokenInvalidToken;
       'api::option.option': ApiOptionOption;
+      'api::payment-history.payment-history': ApiPaymentHistoryPaymentHistory;
       'api::payment.payment': ApiPaymentPayment;
       'api::question.question': ApiQuestionQuestion;
       'api::resident.resident': ApiResidentResident;
