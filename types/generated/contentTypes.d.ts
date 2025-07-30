@@ -541,6 +541,49 @@ export interface ApiBlogBlog extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiBookingBooking extends Struct.CollectionTypeSchema {
+  collectionName: 'bookings';
+  info: {
+    displayName: 'Booking';
+    pluralName: 'bookings';
+    singularName: 'booking';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    date: Schema.Attribute.Date & Schema.Attribute.Required;
+    email: Schema.Attribute.Email & Schema.Attribute.Required;
+    football_field: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::football-field.football-field'
+    >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::booking.booking'
+    > &
+      Schema.Attribute.Private;
+    phone: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    statusBooking: Schema.Attribute.Enumeration<
+      ['pending', 'confirmed', 'cancelled']
+    > &
+      Schema.Attribute.DefaultTo<'pending'>;
+    team_name: Schema.Attribute.String & Schema.Attribute.Required;
+    time_slot: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::time-slot.time-slot'
+    >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiBuildingServiceBuildingService
   extends Struct.CollectionTypeSchema {
   collectionName: 'building_services';
@@ -611,10 +654,6 @@ export interface ApiBuildingBuilding extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     NumberOfFloors: Schema.Attribute.Integer & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
-    service_fees: Schema.Attribute.Relation<
-      'manyToMany',
-      'api::service-fee.service-fee'
-    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -623,6 +662,58 @@ export interface ApiBuildingBuilding extends Struct.CollectionTypeSchema {
       'api::vote-survey.vote-survey'
     >;
     YearBuilt: Schema.Attribute.Integer;
+  };
+}
+
+export interface ApiCommonFacilityCommonFacility
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'common_facilities';
+  info: {
+    displayName: 'Common Facility';
+    pluralName: 'common-facilities';
+    singularName: 'common-facility';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    capacity: Schema.Attribute.Integer;
+    category: Schema.Attribute.Enumeration<
+      [
+        'gym',
+        'swimming_pool',
+        'playground',
+        'sports_court',
+        'meeting_room',
+        'garden',
+        'parking',
+        'other',
+      ]
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
+    features: Schema.Attribute.JSON;
+    imageUrl: Schema.Attribute.Text;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::common-facility.common-facility'
+    > &
+      Schema.Attribute.Private;
+    location: Schema.Attribute.String;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    operatingHours: Schema.Attribute.JSON;
+    publishedAt: Schema.Attribute.DateTime;
+    rules: Schema.Attribute.RichText;
+    statusFacility: Schema.Attribute.Enumeration<
+      ['available', 'maintenance', 'closed', 'crowded']
+    > &
+      Schema.Attribute.DefaultTo<'available'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -782,14 +873,14 @@ export interface ApiFeedbackFeedback extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    attachments: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
     Content: Schema.Attribute.RichText;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    Image: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios',
-      true
-    >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -808,6 +899,37 @@ export interface ApiFeedbackFeedback extends Struct.CollectionTypeSchema {
       Schema.Attribute.DefaultTo<'Ch\u01B0a x\u1EED l\u00FD'>;
     Title: Schema.Attribute.Text;
     Type: Schema.Attribute.Enumeration<['Suggest', 'Issue', 'Question']>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiFootballFieldFootballField
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'football_fields';
+  info: {
+    displayName: 'FootballField';
+    pluralName: 'football-fields';
+    singularName: 'football-field';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
+    imageUrl: Schema.Attribute.Text;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::football-field.football-field'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1129,41 +1251,6 @@ export interface ApiResidentResident extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface ApiServiceFeeServiceFee extends Struct.CollectionTypeSchema {
-  collectionName: 'service_fees';
-  info: {
-    displayName: 'ServiceFee';
-    pluralName: 'service-fees';
-    singularName: 'service-fee';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    buildings: Schema.Attribute.Relation<
-      'manyToMany',
-      'api::building.building'
-    >;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    DefaultAmount: Schema.Attribute.BigInteger;
-    Description: Schema.Attribute.Text;
-    FeeName: Schema.Attribute.String;
-    FeeUnit: Schema.Attribute.String;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::service-fee.service-fee'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
 export interface ApiServiceRegistrationServiceRegistration
   extends Struct.CollectionTypeSchema {
   collectionName: 'service_registrations';
@@ -1309,6 +1396,35 @@ export interface ApiSurveyResponseSurveyResponse
       'manyToOne',
       'api::vote-survey.vote-survey'
     >;
+  };
+}
+
+export interface ApiTimeSlotTimeSlot extends Struct.CollectionTypeSchema {
+  collectionName: 'time_slots';
+  info: {
+    displayName: 'TimeSlot';
+    pluralName: 'time-slots';
+    singularName: 'time-slot';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    end_time: Schema.Attribute.String & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::time-slot.time-slot'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    start_time: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -1911,13 +2027,16 @@ declare module '@strapi/strapi' {
       'api::apartment-ownership.apartment-ownership': ApiApartmentOwnershipApartmentOwnership;
       'api::apartment-unit.apartment-unit': ApiApartmentUnitApartmentUnit;
       'api::blog.blog': ApiBlogBlog;
+      'api::booking.booking': ApiBookingBooking;
       'api::building-service.building-service': ApiBuildingServiceBuildingService;
       'api::building.building': ApiBuildingBuilding;
+      'api::common-facility.common-facility': ApiCommonFacilityCommonFacility;
       'api::family-member.family-member': ApiFamilyMemberFamilyMember;
       'api::family.family': ApiFamilyFamily;
       'api::fee-item.fee-item': ApiFeeItemFeeItem;
       'api::fee-period.fee-period': ApiFeePeriodFeePeriod;
       'api::feedback.feedback': ApiFeedbackFeedback;
+      'api::football-field.football-field': ApiFootballFieldFootballField;
       'api::gender.gender': ApiGenderGender;
       'api::global.global': ApiGlobalGlobal;
       'api::invalid-token.invalid-token': ApiInvalidTokenInvalidToken;
@@ -1926,11 +2045,11 @@ declare module '@strapi/strapi' {
       'api::payment.payment': ApiPaymentPayment;
       'api::question.question': ApiQuestionQuestion;
       'api::resident.resident': ApiResidentResident;
-      'api::service-fee.service-fee': ApiServiceFeeServiceFee;
       'api::service-registration.service-registration': ApiServiceRegistrationServiceRegistration;
       'api::status.status': ApiStatusStatus;
       'api::survey-answer.survey-answer': ApiSurveyAnswerSurveyAnswer;
       'api::survey-response.survey-response': ApiSurveyResponseSurveyResponse;
+      'api::time-slot.time-slot': ApiTimeSlotTimeSlot;
       'api::utility-fee.utility-fee': ApiUtilityFeeUtilityFee;
       'api::vote-survey.vote-survey': ApiVoteSurveyVoteSurvey;
       'plugin::content-releases.release': PluginContentReleasesRelease;

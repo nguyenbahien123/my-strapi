@@ -1,0 +1,63 @@
+{
+  "kind": "collectionType",
+  "collectionName": "common_facilities",
+  "info": {
+    "singularName": "common-facility",
+    "pluralName": "common-facilities",
+    "displayName": "Common Facility"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "category": {
+      "type": "enumeration",
+      "enum": [
+        "gym",
+        "swimming_pool",
+        "playground",
+        "sports_court",
+        "meeting_room",
+        "garden",
+        "parking",
+        "other"
+      ]
+    },
+    "location": {
+      "type": "string"
+    },
+    "operatingHours": {
+      "type": "json"
+    },
+    "capacity": {
+      "type": "integer"
+    },
+    "statusFacility": {
+      "type": "enumeration",
+      "default": "available",
+      "enum": [
+        "available",
+        "maintenance",
+        "closed",
+        "crowded"
+      ]
+    },
+    "rules": {
+      "type": "richtext"
+    },
+    "features": {
+      "type": "json"
+    },
+    "imageUrl": {
+      "type": "text"
+    }
+  }
+}

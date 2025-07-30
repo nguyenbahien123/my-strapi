@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Resident Published Status</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .resident-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .published {
+            border-left: 4px solid #28a745;
+        }
+        .unpublished {
+            border-left: 4px solid #dc3545;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Resident Published Status</h1>
+    
+    <div class="test-section">
+        <h3>📋 Resident Information</h3>
+        <div class="resident-info unpublished">
+            <strong>Resident ID 4:</strong> Unpublished (should fail)
+        </div>
+        <div class="resident-info published">
+            <strong>Resident ID 39:</strong> Published (should work)
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>🧪 Test Cases</h3>
+        
+        <div>
+            <h4>Test 1: Published Resident (ID 39)</h4>
+            <button class="btn" onclick="testPublishedResident()">Test Published Resident</button>
+            <div id="result1"></div>
+        </div>
+
+        <div>
+            <h4>Test 2: Unpublished Resident (ID 4)</h4>
+            <button class="btn btn-danger" onclick="testUnpublishedResident()">Test Unpublished Resident</button>
+            <div id="result2"></div>
+        </div>
+
+        <div>
+            <h4>Test 3: Non-existent Resident (ID 999)</h4>
+            <button class="btn btn-danger" onclick="testNonExistentResident()">Test Non-existent Resident</button>
+            <div id="result3"></div>
+        </div>
+
+        <div>
+            <h4>Test 4: Get All Feedbacks (Published Residents Only)</h4>
+            <button class="btn" onclick="testGetFeedbacks()">Get All Feedbacks</button>
+            <div id="result4"></div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>📊 Test Results Summary</h3>
+        <div id="summary"></div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:1337/api/feedbacks';
+        
+        // Test data
+        const testData = {
+            Type: 'Issue',
+            Title: 'Test Resident Published Status',
+            Content: 'Testing if resident published status is properly validated.',
+            files: []
+        };
+
+        async function testPublishedResident() {
+            const resultDiv = document.getElementById('result1');
+            resultDiv.innerHTML = '<div class="info">Testing...</div>';
+            
+            try {
+                const formData = new FormData();
+                formData.append("data[Type]", testData.Type);
+                formData.append("data[Title]", testData.Title + ' - Published Resident');
+                formData.append("data[Content]", testData.Content);
+                formData.append("data[Resident]", "39"); // Published resident
+
+                const response = await fetch(BASE_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h4>✅ Success!</h4>
+                            <p><strong>Message:</strong> ${result.message}</p>
+                            <p><strong>Feedback ID:</strong> ${result.data.id}</p>
+                            <p><strong>Resident ID:</strong> ${result.data.Resident?.id || 'N/A'}</p>
+                            <p><strong>Status:</strong> ${result.data.StatusFeedback}</p>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h4>❌ Error!</h4>
+                            <p><strong>Status:</strong> ${response.status}</p>
+                            <p><strong>Message:</strong> ${result.message || result.error?.message || 'Unknown error'}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Network Error!</h4>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function testUnpublishedResident() {
+            const resultDiv = document.getElementById('result2');
+            resultDiv.innerHTML = '<div class="info">Testing...</div>';
+            
+            try {
+                const formData = new FormData();
+                formData.append("data[Type]", testData.Type);
+                formData.append("data[Title]", testData.Title + ' - Unpublished Resident');
+                formData.append("data[Content]", testData.Content);
+                formData.append("data[Resident]", "4"); // Unpublished resident
+
+                const response = await fetch(BASE_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                
+                if (response.status === 400) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h4>✅ Expected Error!</h4>
+                            <p><strong>Status:</strong> ${response.status}</p>
+                            <p><strong>Message:</strong> ${result.message || result.error?.message || 'Unknown error'}</p>
+                            <p><em>This is the expected behavior for unpublished residents.</em></p>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h4>❌ Unexpected Success!</h4>
+                            <p><strong>Status:</strong> ${response.status}</p>
+                            <p><strong>Message:</strong> ${result.message || 'Unknown response'}</p>
+                            <p><em>This should have failed for unpublished residents.</em></p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Network Error!</h4>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function testNonExistentResident() {
+            const resultDiv = document.getElementById('result3');
+            resultDiv.innerHTML = '<div class="info">Testing...</div>';
+            
+            try {
+                const formData = new FormData();
+                formData.append("data[Type]", testData.Type);
+                formData.append("data[Title]", testData.Title + ' - Non-existent Resident');
+                formData.append("data[Content]", testData.Content);
+                formData.append("data[Resident]", "999"); // Non-existent resident
+
+                const response = await fetch(BASE_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                
+                if (response.status === 400) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h4>✅ Expected Error!</h4>
+                            <p><strong>Status:</strong> ${response.status}</p>
+                            <p><strong>Message:</strong> ${result.message || result.error?.message || 'Unknown error'}</p>
+                            <p><em>This is the expected behavior for non-existent residents.</em></p>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h4>❌ Unexpected Success!</h4>
+                            <p><strong>Status:</strong> ${response.status}</p>
+                            <p><strong>Message:</strong> ${result.message || 'Unknown response'}</p>
+                            <p><em>This should have failed for non-existent residents.</em></p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Network Error!</h4>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function testGetFeedbacks() {
+            const resultDiv = document.getElementById('result4');
+            resultDiv.innerHTML = '<div class="info">Testing...</div>';
+            
+            try {
+                const response = await fetch(BASE_URL);
+                const result = await response.json();
+                
+                if (response.ok) {
+                    const feedbacks = result.data || [];
+                    const publishedResidents = feedbacks.filter(f => f.Resident && f.Resident.publishedAt);
+                    const unpublishedResidents = feedbacks.filter(f => f.Resident && !f.Resident.publishedAt);
+                    
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h4>✅ Feedbacks Retrieved!</h4>
+                            <p><strong>Total Feedbacks:</strong> ${feedbacks.length}</p>
+                            <p><strong>Published Residents:</strong> ${publishedResidents.length}</p>
+                            <p><strong>Unpublished Residents:</strong> ${unpublishedResidents.length}</p>
+                            <p><em>Only feedbacks with published residents should be returned.</em></p>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h4>❌ Error!</h4>
+                            <p><strong>Status:</strong> ${response.status}</p>
+                            <p><strong>Message:</strong> ${result.message || result.error?.message || 'Unknown error'}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Network Error!</h4>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Auto-run summary
+        async function updateSummary() {
+            const summaryDiv = document.getElementById('summary');
+            summaryDiv.innerHTML = `
+                <div class="info">
+                    <h4>📋 Test Summary</h4>
+                    <p><strong>Expected Behavior:</strong></p>
+                    <ul>
+                        <li>✅ Published residents (ID 39) should work</li>
+                        <li>❌ Unpublished residents (ID 4) should fail</li>
+                        <li>❌ Non-existent residents (ID 999) should fail</li>
+                        <li>✅ GET /feedbacks should only return published residents</li>
+                    </ul>
+                    <p><em>Click the buttons above to run individual tests.</em></p>
+                </div>
+            `;
+        }
+
+        // Initialize
+        updateSummary();
+    </script>
+</body>
+</html> 

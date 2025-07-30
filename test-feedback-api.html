@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Feedback API - Enhanced</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .file-info {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Feedback API - Enhanced</h1>
+    
+    <form id="feedbackForm">
+        <div class="form-group">
+            <label for="type">Type:</label>
+            <select id="type" name="type" required>
+                <option value="">Select Type</option>
+                <option value="Suggest">Suggest</option>
+                <option value="Issue">Issue</option>
+                <option value="Question">Question</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" placeholder="Enter feedback title" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="content">Content:</label>
+            <textarea id="content" name="content" placeholder="Enter feedback content" required></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="resident">Resident ID:</label>
+            <input type="number" id="resident" name="resident" value="1" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="files">Attachments:</label>
+            <input type="file" id="files" name="files" multiple accept="image/*,video/*,audio/*,.pdf,.doc,.docx">
+            <div id="fileInfo" class="file-info" style="display: none;"></div>
+        </div>
+        
+        <button type="submit">Create Feedback</button>
+    </form>
+    
+    <div id="result"></div>
+
+    <script>
+        // Show file information when files are selected
+        document.getElementById('files').addEventListener('change', function(e) {
+            const files = e.target.files;
+            const fileInfo = document.getElementById('fileInfo');
+            
+            if (files.length > 0) {
+                let info = '<strong>Selected Files:</strong><br>';
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    info += `${i + 1}. ${file.name} (${(file.size / 1024).toFixed(2)} KB)<br>`;
+                }
+                fileInfo.innerHTML = info;
+                fileInfo.style.display = 'block';
+            } else {
+                fileInfo.style.display = 'none';
+            }
+        });
+
+        document.getElementById('feedbackForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            
+            // Add data
+            formData.append('data[Type]', document.getElementById('type').value);
+            formData.append('data[Title]', document.getElementById('title').value);
+            formData.append('data[Content]', document.getElementById('content').value);
+            formData.append('data[Resident]', document.getElementById('resident').value);
+            
+            // Add files
+            const files = document.getElementById('files').files;
+            for (let i = 0; i < files.length; i++) {
+                formData.append('files.attachments', files[i]);
+            }
+            
+            // Show loading state
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            const originalText = submitButton.textContent;
+            submitButton.textContent = 'Creating...';
+            submitButton.disabled = true;
+            
+            try {
+                const response = await fetch('http://localhost:1337/api/feedbacks', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                const resultDiv = document.getElementById('result');
+                
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <h3>✅ Success!</h3>
+                        <p><strong>Message:</strong> ${result.message}</p>
+                        <p><strong>Feedback ID:</strong> ${result.data.id}</p>
+                        <p><strong>Type:</strong> ${result.data.Type}</p>
+                        <p><strong>Title:</strong> ${result.data.Title}</p>
+                        <p><strong>Status:</strong> ${result.data.StatusFeedback}</p>
+                        <p><strong>Created:</strong> ${new Date(result.data.createdAt).toLocaleString()}</p>
+                        ${result.data.attachments && result.data.attachments.length > 0 ? 
+                            `<p><strong>Attachments:</strong> ${result.data.attachments.length} file(s)</p>` : 
+                            '<p><strong>Attachments:</strong> None</p>'
+                        }
+                        <details>
+                            <summary>Full Response</summary>
+                            <pre>${JSON.stringify(result, null, 2)}</pre>
+                        </details>
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+                        <h3>❌ Error!</h3>
+                        <p><strong>Status:</strong> ${response.status}</p>
+                        <p><strong>Message:</strong> ${result.error?.message || result.message || 'Unknown error'}</p>
+                        <details>
+                            <summary>Full Error Response</summary>
+                            <pre>${JSON.stringify(result, null, 2)}</pre>
+                        </details>
+                    `;
+                }
+                
+                console.log('Response:', result);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                const resultDiv = document.getElementById('result');
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <h3>❌ Network Error!</h3>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p>Please check if the Strapi server is running on http://localhost:1337</p>
+                `;
+            } finally {
+                // Restore button state
+                submitButton.textContent = originalText;
+                submitButton.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html> 

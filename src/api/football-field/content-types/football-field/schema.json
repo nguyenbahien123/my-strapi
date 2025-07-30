@@ -1,0 +1,18 @@
+{
+  "kind": "collectionType",
+  "collectionName": "football_fields",
+  "info": {
+    "singularName": "football-field",
+    "pluralName": "football-fields",
+    "displayName": "FootballField"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": { "type": "string", "required": true },
+    "description": { "type": "text" },
+    "imageUrl": { "type": "text"}
+  }
+}

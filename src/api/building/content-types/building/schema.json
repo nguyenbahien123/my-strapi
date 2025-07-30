@@ -35,12 +35,6 @@
       "relation": "manyToMany",
       "target": "api::vote-survey.vote-survey",
       "mappedBy": "buildings"
-    },
-    "service_fees": {
-      "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::service-fee.service-fee",
-      "mappedBy": "buildings"
     }
   }
 }

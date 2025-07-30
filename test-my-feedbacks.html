@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test My Feedbacks API</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 8px; }
+        .btn { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; margin: 5px; cursor: pointer; }
+        .btn:hover { background: #0056b3; }
+        .btn-success { background: #28a745; }
+        .btn-success:hover { background: #218838; }
+        .result { margin: 10px 0; padding: 10px; border-radius: 4px; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto; }
+        .feedback-item { 
+            border: 1px solid #ddd; 
+            margin: 10px 0; 
+            padding: 15px; 
+            border-radius: 8px; 
+            background: #f8f9fa; 
+        }
+        .feedback-title { font-weight: bold; color: #333; margin-bottom: 5px; }
+        .feedback-content { color: #666; margin-bottom: 10px; }
+        .feedback-meta { font-size: 12px; color: #888; }
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-processing { background: #d1ecf1; color: #0c5460; }
+        .status-completed { background: #d4edda; color: #155724; }
+    </style>
+</head>
+<body>
+    <h1>Test My Feedbacks API</h1>
+    
+    <div class="test-section">
+        <h3>🔍 Test 1: Get My Feedbacks (Resident 39)</h3>
+        <button class="btn btn-success" onclick="getMyFeedbacks(39)">Get My Feedbacks (ID 39)</button>
+        <div id="result39"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>🔍 Test 2: Get My Feedbacks (Resident 37)</h3>
+        <button class="btn btn-success" onclick="getMyFeedbacks(37)">Get My Feedbacks (ID 37)</button>
+        <div id="result37"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>🔍 Test 3: Get My Feedbacks (Resident 4)</h3>
+        <button class="btn btn-success" onclick="getMyFeedbacks(4)">Get My Feedbacks (ID 4)</button>
+        <div id="result4"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>🔍 Test 4: Get My Feedbacks with Pagination</h3>
+        <button class="btn" onclick="getMyFeedbacksWithPagination(39)">Get with Pagination</button>
+        <div id="resultPagination"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>🔍 Test 5: Get My Feedbacks with Filters</h3>
+        <button class="btn" onclick="getMyFeedbacksWithFilters(39)">Get with Filters</button>
+        <div id="resultFilters"></div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:1337/api';
+
+        function getStatusBadgeClass(status) {
+            switch(status) {
+                case 'Chưa xử lý': return 'status-pending';
+                case 'Đang xử lý': return 'status-processing';
+                case 'Đã xử lý': return 'status-completed';
+                default: return 'status-pending';
+            }
+        }
+
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleString('vi-VN');
+        }
+
+        function displayFeedbacks(feedbacks, resultDiv) {
+            if (!feedbacks || feedbacks.length === 0) {
+                resultDiv.innerHTML = '<div class="info">Không có feedback nào.</div>';
+                return;
+            }
+
+            let html = `<div class="success"><h4>✅ Found ${feedbacks.length} feedback(s)</h4>`;
+            
+            feedbacks.forEach(feedback => {
+                html += `
+                    <div class="feedback-item">
+                        <div class="feedback-title">${feedback.Title}</div>
+                        <div class="feedback-content">${feedback.Content}</div>
+                        <div class="feedback-meta">
+                            <span class="status-badge ${getStatusBadgeClass(feedback.StatusFeedback)}">${feedback.StatusFeedback}</span>
+                            <span> • Type: ${feedback.Type}</span>
+                            <span> • Created: ${formatDate(feedback.createdAt)}</span>
+                            ${feedback.attachments && feedback.attachments.length > 0 ? 
+                                `<span> • Attachments: ${feedback.attachments.length} file(s)</span>` : ''
+                            }
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            resultDiv.innerHTML = html;
+        }
+
+        async function getMyFeedbacks(residentId) {
+            const resultDiv = document.getElementById(`result${residentId}`);
+            resultDiv.innerHTML = '<div class="info">Loading...</div>';
+            
+            try {
+                const response = await fetch(`${BASE_URL}/feedbacks/my?residentId=${residentId}`);
+                const result = await response.json();
+                
+                if (response.ok) {
+                    displayFeedbacks(result.data, resultDiv);
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h4>❌ Error</h4>
+                            <p><strong>Status:</strong> ${response.status}</p>
+                            <p><strong>Message:</strong> ${result.message || result.error?.message || 'Unknown error'}</p>
+                            <pre>${JSON.stringify(result, null, 2)}</pre>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Network Error</h4>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function getMyFeedbacksWithPagination(residentId) {
+            const resultDiv = document.getElementById('resultPagination');
+            resultDiv.innerHTML = '<div class="info">Loading with pagination...</div>';
+            
+            try {
+                const response = await fetch(`${BASE_URL}/feedbacks/my?residentId=${residentId}&pagination[page]=1&pagination[pageSize]=5`);
+                const result = await response.json();
+                
+                if (response.ok) {
+                    let html = `
+                        <div class="success">
+                            <h4>✅ Found ${result.data.length} feedback(s) (Page 1, Size 5)</h4>
+                            <p><strong>Total:</strong> ${result.pagination.total}</p>
+                            <p><strong>Page Count:</strong> ${result.pagination.pageCount}</p>
+                    `;
+                    
+                    result.data.forEach(feedback => {
+                        html += `
+                            <div class="feedback-item">
+                                <div class="feedback-title">${feedback.Title}</div>
+                                <div class="feedback-content">${feedback.Content}</div>
+                                <div class="feedback-meta">
+                                    <span class="status-badge ${getStatusBadgeClass(feedback.StatusFeedback)}">${feedback.StatusFeedback}</span>
+                                    <span> • Type: ${feedback.Type}</span>
+                                    <span> • Created: ${formatDate(feedback.createdAt)}</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    html += '</div>';
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h4>❌ Error</h4>
+                            <p><strong>Status:</strong> ${response.status}</p>
+                            <p><strong>Message:</strong> ${result.message || result.error?.message || 'Unknown error'}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Network Error</h4>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function getMyFeedbacksWithFilters(residentId) {
+            const resultDiv = document.getElementById('resultFilters');
+            resultDiv.innerHTML = '<div class="info">Loading with filters...</div>';
+            
+            try {
+                // Filter by status
+                const response = await fetch(`${BASE_URL}/feedbacks/my?residentId=${residentId}&filters[StatusFeedback]=Đã xử lý`);
+                const result = await response.json();
+                
+                if (response.ok) {
+                    let html = `
+                        <div class="success">
+                            <h4>✅ Found ${result.data.length} completed feedback(s)</h4>
+                    `;
+                    
+                    result.data.forEach(feedback => {
+                        html += `
+                            <div class="feedback-item">
+                                <div class="feedback-title">${feedback.Title}</div>
+                                <div class="feedback-content">${feedback.Content}</div>
+                                <div class="feedback-meta">
+                                    <span class="status-badge ${getStatusBadgeClass(feedback.StatusFeedback)}">${feedback.StatusFeedback}</span>
+                                    <span> • Type: ${feedback.Type}</span>
+                                    <span> • Created: ${formatDate(feedback.createdAt)}</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    html += '</div>';
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h4>❌ Error</h4>
+                            <p><strong>Status:</strong> ${response.status}</p>
+                            <p><strong>Message:</strong> ${result.message || result.error?.message || 'Unknown error'}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Network Error</h4>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html> 

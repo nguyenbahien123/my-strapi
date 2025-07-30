@@ -1,0 +1,22 @@
+{
+  "kind": "collectionType",
+  "collectionName": "bookings",
+  "info": {
+    "singularName": "booking",
+    "pluralName": "bookings",
+    "displayName": "Booking"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "date": { "type": "date", "required": true },
+    "team_name": { "type": "string", "required": true },
+    "phone": { "type": "string", "required": true },
+    "email": { "type": "email", "required": true },
+    "statusBooking": { "type": "enumeration", "enum": ["pending", "confirmed", "cancelled"], "default": "pending" },
+    "football_field": { "type": "relation", "relation": "manyToOne", "target": "api::football-field.football-field" },
+    "time_slot": { "type": "relation", "relation": "manyToOne", "target": "api::time-slot.time-slot" }
+  }
+}

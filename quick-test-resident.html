@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Test - Resident Published Status</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+        .test-btn { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; margin: 10px; cursor: pointer; }
+        .test-btn:hover { background: #0056b3; }
+        .result { margin: 10px 0; padding: 10px; border-radius: 4px; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>Quick Test - Resident Published Status</h1>
+    
+    <div>
+        <h3>Test Resident ID 39 (Published)</h3>
+        <button class="test-btn" onclick="testResident39()">Test Resident 39</button>
+        <div id="result39"></div>
+    </div>
+
+    <div>
+        <h3>Test Resident ID 4 (Unpublished)</h3>
+        <button class="test-btn" onclick="testResident4()">Test Resident 4</button>
+        <div id="result4"></div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:1337/api/feedbacks';
+
+        async function testResident39() {
+            const resultDiv = document.getElementById('result39');
+            resultDiv.innerHTML = '<div class="info">Testing Resident 39 (Published)...</div>';
+            
+            try {
+                const formData = new FormData();
+                formData.append("data[Type]", "Issue");
+                formData.append("data[Title]", "Test Resident 39 - Published");
+                formData.append("data[Content]", "Testing published resident");
+                formData.append("data[Resident]", "39");
+
+                const response = await fetch(BASE_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h4>✅ Success!</h4>
+                            <p>Resident 39 (Published) works correctly</p>
+                            <p>Feedback ID: ${result.data.id}</p>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h4>❌ Error!</h4>
+                            <p>Status: ${response.status}</p>
+                            <p>Message: ${result.message || 'Unknown error'}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Network Error!</h4>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function testResident4() {
+            const resultDiv = document.getElementById('result4');
+            resultDiv.innerHTML = '<div class="info">Testing Resident 4 (Unpublished)...</div>';
+            
+            try {
+                const formData = new FormData();
+                formData.append("data[Type]", "Issue");
+                formData.append("data[Title]", "Test Resident 4 - Unpublished");
+                formData.append("data[Content]", "Testing unpublished resident");
+                formData.append("data[Resident]", "4");
+
+                const response = await fetch(BASE_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                
+                if (response.status === 400) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h4>✅ Expected Error!</h4>
+                            <p>Resident 4 (Unpublished) correctly rejected</p>
+                            <p>Message: ${result.message || 'Unknown error'}</p>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h4>❌ Unexpected Success!</h4>
+                            <p>Resident 4 should have been rejected</p>
+                            <p>Status: ${response.status}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Network Error!</h4>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html> 
